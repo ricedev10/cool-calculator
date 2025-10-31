@@ -13,9 +13,22 @@ const digitButtons = document.querySelectorAll(
 	".calculator-container .digits > *"
 );
 function onDigitClicked(value) {
+	let isDecimal = value == ".";
 	if (!operation) {
-		digitA = `${digitA == "0" ? "" : digitA}${value}`;
+		if (isDecimal && digitA.includes(".")) return;
+		digitA = `${
+			isNaN(+digitA) || digitA == "0" ? "" : digitA
+		}${value}`;
+		console.log(isNaN(+digitA), digitA, value);
 	} else {
+		console.log(digitB);
+		if (
+			digitB &&
+			!digitB &&
+			isDecimal &&
+			digitB.includes(".")
+		)
+			return;
 		digitB = !digitB
 			? value
 			: `${digitB == "0" ? "" : digitB}${value}`;
@@ -33,10 +46,14 @@ const operatorButtons = document.querySelectorAll(
 	".calculator-container .operators > .operation"
 );
 function onOperationClicked(buttonOperation, symbol) {
-	operation = buttonOperation;
-	operationSymbol = ` ${symbol} `;
-	display.dispatchEvent(displayUpdated);
-	console.log(buttonOperation, symbol);
+	if (digitB) {
+		onEqualsClicked();
+		onOperationClicked(buttonOperation, symbol);
+	} else {
+		operation = buttonOperation;
+		operationSymbol = ` ${symbol} `;
+		display.dispatchEvent(displayUpdated);
+	}
 }
 for (let button of operatorButtons) {
 	let buttonOperation = button.getAttribute("operation");
@@ -74,22 +91,62 @@ function onDeleteClicked() {
 deleteButton.addEventListener("click", onDeleteClicked);
 equalsButton.addEventListener("click", onEqualsClicked);
 
+// clear button
+const clearButton = document.querySelector(".clear");
+function clearCalculator() {
+	digitA = "0";
+	digitB = null;
+	operation = null;
+	operationSymbol = "";
+
+	display.dispatchEvent(displayUpdated);
+}
+
+clearButton.addEventListener("click", () => {
+	clearCalculator();
+});
+
 // add keyboard support
 const body = document.querySelector("body");
 body.addEventListener("keydown", (event) => {
 	if (!isNaN(+event.key)) {
 		onDigitClicked(+event.key);
-	} else if (event.key == "Enter" || event.key == "=") {
-		onEqualsClicked();
-	} else if (event.key == "+") {
-		onOperationClicked("add", "+");
-	} else if (event.key == "-") {
-		onOperationClicked("subtract", "-");
-	} else if (event.key == "*") {
-		onOperationClicked("multiply", "x");
-	} else if (event.key == "/") {
-		onOperationClicked("divide", "/");
 	}
+
+	switch (event.key) {
+		case "Enter":
+			onEqualsClicked();
+			break;
+		case "=":
+			onEqualsClicked();
+			break;
+		case "+":
+			onOperationClicked("add", "+");
+			break;
+		case "-":
+			onOperationClicked("subtract", "-");
+			break;
+		case "*":
+			onOperationClicked("multiply", "x");
+			break;
+		case "/":
+			onOperationClicked("divide", "/");
+			break;
+		case ".":
+			onDigitClicked(".");
+			break;
+	}
+	// if (event.key == "Enter" || event.key == "=") {
+	// 	onEqualsClicked();
+	// } else if (event.key == "+") {
+	// 	onOperationClicked("add", "+");
+	// } else if (event.key == "-") {
+	// 	onOperationClicked("subtract", "-");
+	// } else if (event.key == "*") {
+	// 	onOperationClicked("multiply", "x");
+	// } else if (event.key == "/") {
+	// 	onOperationClicked("divide", "/");
+	// }
 });
 
 // update display
@@ -112,13 +169,14 @@ let operations = {
 		return a * b;
 	},
 	divide: function (a, b) {
-		return a / b;
+		return b == "0" ? "ERROR" : a / b;
 	},
 };
 
 //
 function calculate(operator, a, b) {
-	return (
-		Math.floor(operations[operator](a, b) * 1000) / 1000
-	);
+	let result = operations[operator](a, b);
+	return typeof result == "number"
+		? Math.floor(result * 10000) / 10000
+		: result;
 }
