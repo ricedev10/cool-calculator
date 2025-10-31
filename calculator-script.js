@@ -1,5 +1,8 @@
 "use strict";
 
+const display = document.querySelector(".display");
+const displayUpdated = new CustomEvent("displayUpdated");
+
 // keep track of digits
 let digitA = "0";
 let digitB = null;
@@ -14,11 +17,15 @@ for (let button of digitButtons) {
 		console.log(digitA);
 		if (!digitB) {
 			digitA = `${digitA == "0" ? "" : digitA}${value}`;
+			display.dispatchEvent(displayUpdated);
 		}
 	});
 }
 
 // update display
+display.addEventListener("displayUpdated", () => {
+	display.textContent = digitA;
+});
 
 // calculator functions
 const ORDER_OF_OPERATIONS = [
