@@ -1,3 +1,48 @@
 * {
 	box-sizing: border-box;
 }
+
+.calculator-container {
+	width: 25%;
+	display: flex;
+	justify-content: stretch;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.calculator-container > .display {
+	height: 64px;
+	flex-basis: 100%;
+	background-color: gray;
+	text-align: left;
+}
+
+.calculator-container .buttons {
+	display: flex;
+	flex-direction: row;
+}
+
+.buttons > .digits,
+.buttons > .operators {
+	padding: 0;
+}
+.buttons > .digits {
+	flex-grow: 1;
+	display: flex;
+	justify-content: flex-start;
+	align-content: flex-start;
+	flex-wrap: wrap;
+}
+.buttons > .digits > * {
+	aspect-ratio: 1;
+	width: 33%;
+	height: auto;
+}
+
+.buttons > .operators > * {
+	aspect-ratio: 1;
+	width: 100%;
+}
+.buttons * {
+	font-size: 24px;
+}
