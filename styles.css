@@ -2,13 +2,23 @@
 	box-sizing: border-box;
 }
 
+body {
+	display: flex;
+	flex-direction: column;
+}
+
+#title {
+	align-self: center;
+}
+
 .calculator-container {
-	width: 25%;
+	width: 30%;
 	height: 100%;
 	display: flex;
 	justify-content: stretch;
 	flex-direction: column;
 	flex-wrap: wrap;
+	align-self: center;
 }
 
 .calculator-container > .display {
