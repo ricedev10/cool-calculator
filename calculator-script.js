@@ -78,8 +78,11 @@ function onEqualsClicked() {
 }
 function onDeleteClicked() {
 	if (digitB != null) {
-		console.log(digitB, typeof digitB);
-		digitB = digitB.slice(0, -1);
+		if (digitB.length <= 1) {
+			digitB = null;
+		} else {
+			digitB = digitB.slice(0, -1);
+		}
 	} else if (operation != null) {
 		operation = null;
 		operationSymbol = "";
@@ -113,12 +116,16 @@ body.addEventListener("keydown", (event) => {
 		onDigitClicked(+event.key);
 	}
 
+	console.log(event.key);
 	switch (event.key) {
 		case "Enter":
 			onEqualsClicked();
 			break;
 		case "=":
 			onEqualsClicked();
+			break;
+		case "Backspace":
+			onDeleteClicked();
 			break;
 		case "+":
 			onOperationClicked("add", "+");
